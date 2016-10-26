@@ -1,8 +1,14 @@
 package com.cooksys.ftd.assignments.socket;
 
-import com.cooksys.ftd.assignments.socket.model.Student;
+import java.io.File;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import com.cooksys.ftd.assignments.socket.model.Config;
+import com.cooksys.ftd.assignments.socket.model.LocalConfig;
+import com.cooksys.ftd.assignments.socket.model.Student;
 
 public class Server extends Utils {
 
@@ -14,7 +20,18 @@ public class Server extends Utils {
      * @return a {@link Student} object unmarshalled from the given file path
      */
     public static Student loadStudent(String studentFilePath, JAXBContext jaxb) {
-        return null; // TODO
+       File file = new File(studentFilePath);
+    	
+    	try {
+    		Unmarshaller jaxbUnmarshaller = jaxb.createUnmarshaller();
+    		Student student = (Student) jaxbUnmarshaller.unmarshal(file);
+    		System.out.println(student);
+    		return student;
+
+    	  } catch (JAXBException e) {
+    		e.printStackTrace();
+    	  }
+    	return null;
     }
 
     /**
@@ -28,8 +45,10 @@ public class Server extends Utils {
      * socket's output stream, sending the object to the client.
      *
      * Following this transaction, the server may shut down or listen for more connections.
+     * @throws JAXBException 
      */
-    public static void main(String[] args) {
-        // TODO
+    public static void main(String[] args) throws JAXBException {
+    	JAXBContext jaxb = JAXBContext.newInstance(Student.class, Config.class, LocalConfig.class);
+        loadStudent("config/student.xml", jaxb);
     }
 }
